@@ -7,28 +7,28 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  /* Light mode variables */
+  /* Light mode */
   --bg: #f8f9fa;
   --text: #212529;
   --sidebar-bg: #fff;
   --header-bg: #f1f3f5;
   --bot-bg: #e9ecef;
-  --user-bg: #15803d;
-  --primary: #15803d;
+  --user-bg: #15803d; /* chat bubble */
+  --primary: #F2F3F5; /* header background light mode */
   --border: #dee2e6;
   --hover: #f1f3f5;
   --chatlist-bg: #fff;
 }
 
 body.dark {
-  /* Dark mode variables */
+  /* Dark mode */
   --bg: #1e1e1e;
   --text: #e9ecef;
   --sidebar-bg: #2c2c2c;
   --header-bg: #2c2c2c;
   --bot-bg: #2a2a2a;
-  --user-bg: #15803d;
-  --primary: #15803d;
+  --user-bg: #15803d; /* chat bubble tetap hijau */
+  --primary: #2C2C2C; /* header background dark mode */
   --border: #444;
   --hover: #333;
   --chatlist-bg: #2c2c2c;
@@ -42,6 +42,7 @@ body {
   background: var(--bg);
   color: var(--text);
   overflow: hidden;
+  transition: background 0.3s, color 0.3s;
 }
 
 /* Sidebar */
@@ -64,20 +65,32 @@ body {
 
 .sidebar-header {
   padding: 1rem;
-  font-weight: 600;
-  font-size: 20px;
-  color: #fff;
   background: var(--primary);
   border-bottom: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: background 0.3s, color 0.3s;
+}
+
+.sidebar-title {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 20px;
+  color: var(--text);
+}
+
+.sidebar-title img {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
 }
 
 .sidebar-icons button {
   font-size: 20px;
   margin-left: 5px;
-  color: #fff;
+  color: var(--text);
   cursor: pointer;
   background: none;
   border: none;
@@ -118,7 +131,7 @@ body {
 }
 
 .chat-item.active {
-  background: var(--primary);
+  background: var(--user-bg);
   color: #fff;
   font-weight: 600;
 }
@@ -235,60 +248,22 @@ body {
   overflow-y: hidden;
   transition: all 0.3s;
 }
-
-/* Settings */
-.settings {
-  padding: 1rem;
-  background: var(--chatlist-bg);
-  border-top: 1px solid var(--border);
-  display: none;
-  flex-direction: column;
-  gap: 0.75rem;
-  transition: background 0.3s;
-}
-
-.settings input {
-  padding: 0.75rem;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  outline: none;
-  background: var(--bot-bg);
-  color: var(--text);
-  transition: background 0.3s, color 0.3s;
-}
-
-.settings button {
-  background: var(--primary);
-  padding: 0.75rem;
-  border: none;
-  border-radius: 10px;
-  color: #fff;
-  cursor: pointer;
-  font-weight: 600;
-  transition: background 0.3s;
-}
-
-.settings button:hover {
-  background: #134e2d; /* sedikit lebih gelap */
-}
 </style>
 </head>
 <body>
 
 <div class="sidebar" id="sidebar">
   <div class="sidebar-header">
-    DataFarm AI
+    <div class="sidebar-title">
+      <img src="file:///Users/agungtrinanda/Downloads/brainstorm.png" 
+           alt="logo" style="width:24px;height:24px;margin-right:8px;">
+      DataFarm AI
+    </div>
     <div class="sidebar-icons">
       <button onclick="newChat()">➕</button>
-      <button onclick="toggleSettings()">⚙️</button>
     </div>
   </div>
   <div class="chat-list" id="chatList"></div>
-  <div class="settings" id="settingsPanel">
-    <input type="text" id="apiKey" placeholder="Masukkan API Key" />
-    <input type="text" id="webhookUrl" placeholder="Masukkan Webhook URL" />
-    <button onclick="saveSettings()">Simpan</button>
-  </div>
 </div>
 
 <div class="chat-container" id="chatContainer">
@@ -299,11 +274,15 @@ body {
   </div>
   <div class="chat-content" id="chatContent"></div>
   <form class="chat-input" id="chatForm">
-    <textarea id="chatMessage" placeholder="Ketik pesan..."></textarea>
+    <textarea id="chatMessage" placeholder="Ask anything"></textarea>
   </form>
 </div>
 
 <script>
+// Config API
+const API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5NjJiYTBiZC0wNGI0LTQ3MmEtOTA1ZC03ZjBkM2Y3YjcwZDciLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzU5MjAyMDUwfQ.7A8hXO6V6zUmAXuYk1Un37MrJzkPiFI7rlzq7umWPTQ";
+const WEBHOOK_URL = "https://n8n-0i1en4aebsj3.sumopod.my/webhook/64804454-9d05-4222-a1e3-67b49db08517/chat";
+
 const sidebar = document.getElementById("sidebar");
 const chatContainer = document.getElementById("chatContainer");
 const chatContent = document.getElementById("chatContent");
@@ -311,7 +290,6 @@ const chatForm = document.getElementById("chatForm");
 const chatMessage = document.getElementById("chatMessage");
 const chatList = document.getElementById("chatList");
 const chatHeader = document.getElementById("chatHeader");
-const settingsPanel = document.getElementById("settingsPanel");
 
 let chats = JSON.parse(localStorage.getItem("chats") || "[]");
 let activeChat = localStorage.getItem("activeChat") || null;
@@ -367,7 +345,7 @@ function appendMessage(text, sender, save=true) {
 function showTyping() {
   const div = document.createElement("div");
   div.className = "message bot typing";
-  div.textContent = "AI sedang mengetik...";
+  div.textContent = "mbah is thinking...";
   chatContent.appendChild(div);
   div.scrollIntoView({ behavior: "smooth", block: "end" });
   return div;
@@ -405,26 +383,9 @@ function deleteChat(id) {
   renderChats();
 }
 
-function toggleSettings() {
-  settingsPanel.style.display = settingsPanel.style.display === "flex" ? "none" : "flex";
-}
-
 function toggleSidebar() {
   sidebar.classList.toggle("hidden");
   chatContainer.classList.toggle("expanded");
-}
-
-function saveSettings() {
-  const apiKey = document.getElementById("apiKey").value.trim();
-  const webhookUrl = document.getElementById("webhookUrl").value.trim();
-  if (apiKey && webhookUrl) {
-    localStorage.setItem("apiKey", apiKey);
-    localStorage.setItem("webhookUrl", webhookUrl);
-    settingsPanel.style.display = "none";
-    alert("✅ Konfigurasi disimpan!");
-  } else {
-    alert("Harap isi API Key dan Webhook URL");
-  }
 }
 
 function toggleTheme() {
@@ -446,20 +407,19 @@ chatForm.addEventListener("submit", async (e) => {
   appendMessage(message, "user");
   chatMessage.value = "";
 
-  const webhookUrl = localStorage.getItem("webhookUrl");
-  if (!webhookUrl) {
-    appendMessage("⚠️ Webhook URL belum diatur di Settings", "bot");
+  if (!WEBHOOK_URL) {
+    appendMessage("⚠️ Webhook URL belum diatur", "bot");
     return;
   }
 
   const typingDiv = showTyping();
 
   try {
-    const res = await fetch(webhookUrl, {
+    const res = await fetch(WEBHOOK_URL, {
       method: "POST",
       headers: { 
         "Content-Type": "application/json", 
-        "Authorization": "Bearer " + (localStorage.getItem("apiKey") || "")
+        "Authorization": "Bearer " + API_KEY
       },
       body: JSON.stringify({ sessionId: activeChat, chatInput: message })
     });
