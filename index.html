@@ -7,24 +7,28 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root {
+  /* Light mode variables */
   --bg: #f8f9fa;
   --text: #212529;
   --sidebar-bg: #fff;
   --header-bg: #f1f3f5;
   --bot-bg: #e9ecef;
   --user-bg: #15803d;
+  --primary: #15803d;
   --border: #dee2e6;
   --hover: #f1f3f5;
   --chatlist-bg: #fff;
 }
 
 body.dark {
+  /* Dark mode variables */
   --bg: #1e1e1e;
   --text: #e9ecef;
   --sidebar-bg: #2c2c2c;
   --header-bg: #2c2c2c;
   --bot-bg: #2a2a2a;
   --user-bg: #15803d;
+  --primary: #15803d;
   --border: #444;
   --hover: #333;
   --chatlist-bg: #2c2c2c;
@@ -51,7 +55,7 @@ body {
   top: 0; bottom: 0; left: 0;
   z-index: 10;
   box-shadow: 2px 0 5px rgba(0,0,0,0.05);
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, background 0.3s;
 }
 
 .sidebar.hidden {
@@ -62,8 +66,8 @@ body {
   padding: 1rem;
   font-weight: 600;
   font-size: 20px;
-  color: #fff; /* judul putih */
-  background: #2C2C2C; /* judul beda bg */
+  color: #fff;
+  background: var(--primary);
   border-bottom: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
@@ -114,7 +118,7 @@ body {
 }
 
 .chat-item.active {
-  background: #15803d;
+  background: var(--primary);
   color: #fff;
   font-weight: 600;
 }
@@ -133,7 +137,7 @@ body {
   margin-left: 280px;
   display: flex;
   flex-direction: column;
-  transition: margin-left 0.3s ease;
+  transition: margin-left 0.3s ease, background 0.3s;
   background: var(--bg);
 }
 
@@ -144,12 +148,13 @@ body {
 .chat-header {
   padding: 1rem;
   background: var(--header-bg);
-  color: #fff;
+  color: var(--text);
   font-weight: 600;
   border-bottom: 1px solid var(--border);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: background 0.3s, color 0.3s;
 }
 
 .chat-header button {
@@ -157,8 +162,8 @@ body {
   border: none;
   font-size: 20px;
   cursor: pointer;
-  color: #fff;
-  transition: transform 0.2s;
+  color: var(--text);
+  transition: transform 0.2s, color 0.3s;
 }
 
 .chat-header button:hover {
@@ -183,7 +188,7 @@ body {
   line-height: 1.5;
   white-space: pre-wrap;
   word-wrap: break-word;
-  transition: all 0.2s;
+  transition: all 0.3s;
 }
 
 .message.user {
@@ -204,11 +209,13 @@ body {
   opacity: 0.7;
 }
 
+/* Input */
 .chat-input {
   display: flex;
   padding: 1rem;
   border-top: 1px solid var(--border);
   background: var(--header-bg);
+  transition: background 0.3s;
 }
 
 .chat-input textarea {
@@ -224,9 +231,9 @@ body {
   color: var(--text);
   font-family: 'Inter', Arial, sans-serif;
   min-height: 40px;
-  max-height: 40px; /* 1 baris */
+  max-height: 40px;
   overflow-y: hidden;
-  transition: all 0.2s;
+  transition: all 0.3s;
 }
 
 /* Settings */
@@ -237,6 +244,7 @@ body {
   display: none;
   flex-direction: column;
   gap: 0.75rem;
+  transition: background 0.3s;
 }
 
 .settings input {
@@ -246,21 +254,22 @@ body {
   outline: none;
   background: var(--bot-bg);
   color: var(--text);
+  transition: background 0.3s, color 0.3s;
 }
 
 .settings button {
-  background: #6c5ce7;
+  background: var(--primary);
   padding: 0.75rem;
   border: none;
   border-radius: 10px;
   color: #fff;
   cursor: pointer;
   font-weight: 600;
-  transition: background 0.2s;
+  transition: background 0.3s;
 }
 
 .settings button:hover {
-  background: #5347b3;
+  background: #134e2d; /* sedikit lebih gelap */
 }
 </style>
 </head>
@@ -423,7 +432,6 @@ function toggleTheme() {
   localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
 }
 
-// Enter submit
 chatMessage.addEventListener("keydown", (e) => {
   if (e.key === "Enter" && !e.shiftKey) {
     e.preventDefault();
@@ -464,7 +472,6 @@ chatForm.addEventListener("submit", async (e) => {
   }
 });
 
-// On load
 window.onload = () => {
   if (!activeChat && chats.length > 0) activeChat = chats[chats.length-1].id;
   if (!activeChat) newChat();
